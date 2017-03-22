@@ -36,7 +36,7 @@ CONF_ZONE_IGNORE = 'zone_ignore'
 DEFAULT_NAME = 'Yamaha Receiver (YNCA)'
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
+    vol.Optional(CONF_NAME, default=None): cv.string,
     vol.Optional(CONF_PORT): cv.string,
     vol.Optional(CONF_SOURCE_IGNORE, default=[]):
         vol.All(cv.ensure_list, [cv.string]),
@@ -100,11 +100,6 @@ class YamahaYncaDevice(MediaPlayerDevice):
     @property
     def name(self):
         """Return the name of the device."""
-        return "{} {}".format(self._name or self._receiver.model_name, self._zone._subunit)
-
-    @property
-    def friendly_name(self):
-        """Return the friendly name of the device."""
         return "{} {}".format(self._name or self._receiver.model_name, self._zone.name)
 
     @property
