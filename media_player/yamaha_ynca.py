@@ -102,17 +102,18 @@ class YamahaYncaDevice(MediaPlayerDevice):
     @property
     def state(self):
         """Return the state of the device."""
-        return self._zone.on
+        return STATE_ON if self._zone.on else STATE_OFF
 
     @property
     def volume_level(self):
         """Volume level of the media player (0..1)."""
-        return self.scale(self._zone.volume, [self._zone.min_volume, self._zone.max_volume], [0, 1])
+        return self.scale(self._zone.volume, [-80.5, self._zone.max_volume], [0, 1])
 
     @property
     def is_volume_muted(self):
         """Boolean if volume is currently muted."""
-        return self._zone.muted == ynca.Mute.on
+        import ynca
+        return self._zone.mute == ynca.Mute.on
 
     @property
     def source(self):
@@ -123,7 +124,7 @@ class YamahaYncaDevice(MediaPlayerDevice):
     def source_list(self):
         """List of available input sources."""
         # TODO combine with ignore/whitelist
-        return sorted(self._zone.inputs.keys())
+        return sorted(self._receiver.inputs.keys())
 
     @property
     def supported_features(self):
@@ -137,10 +138,11 @@ class YamahaYncaDevice(MediaPlayerDevice):
 
     def set_volume_level(self, volume):
         """Set volume level, convert range from 0..1."""
-        self._zone.volume = self.scale(volume, [0, 1], [self._zone.min_volume, self._zone.max_volume])
+        self._zone.volume = self.scale(volume, [0, 1], [-80.5, self._zone.max_volume])
 
     def mute_volume(self, mute):
         """Mute (true) or unmute (false) media player."""
+        import ynca
         if mute:
             self._zone.mute = ynca.Mute.on
         else:
