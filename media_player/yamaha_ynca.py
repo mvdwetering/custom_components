@@ -21,7 +21,7 @@ from homeassistant.const import (CONF_NAME, CONF_PORT,  STATE_OFF, STATE_ON,
                                  STATE_PLAYING, STATE_IDLE)
 import homeassistant.helpers.config_validation as cv
 
-REQUIREMENTS = ['ynca==0.1.0']
+REQUIREMENTS = ['ynca==0.2.0']
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -58,21 +58,25 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
     receiver = ynca.YncaReceiver(port)  # Initialization takes a while
 
+    devices = []
     for zone in receiver.zones:
         if zone not in zone_ignore:
-            add_devices([YamahaYncaDevice(name, receiver, receiver.zones[zone], source_ignore, source_names)])
+            devices.append(YamahaYncaDevice(name, receiver, receiver.zones[zone], source_ignore, source_names))
+            
+    add_devices(devices)
 
 
 class YamahaYncaDevice(MediaPlayerDevice):
     """Representation of a Yamaha device."""
 
     def __init__(self, name, receiver, zone, source_ignore, source_names):
-        """Initialize the Yamaha Receiver."""
         self._name = name
         self._receiver = receiver
         self._zone = zone
+        self._zone.on_update_callback = self.update
 
-        #self.schedule_update_ha_state()
+    def update(self):
+        self.schedule_update_ha_state()
 
     @staticmethod
     def scale(input_value, input_range, output_range):
@@ -91,12 +95,16 @@ class YamahaYncaDevice(MediaPlayerDevice):
     @property
     def should_poll(self):
         """No polling needed."""
-        # TODO Lets poll for now, there is no update callback on the zones :-(
-        return True
+        return False
 
     @property
     def name(self):
         """Return the name of the device."""
+        return "{} {}".format(self._name or self._receiver.model_name, self._zone._subunit)
+
+    @property
+    def friendly_name(self):
+        """Return the friendly name of the device."""
         return "{} {}".format(self._name or self._receiver.model_name, self._zone.name)
 
     @property
@@ -107,7 +115,7 @@ class YamahaYncaDevice(MediaPlayerDevice):
     @property
     def volume_level(self):
         """Volume level of the media player (0..1)."""
-        return self.scale(self._zone.volume, [-80.5, self._zone.max_volume], [0, 1])
+        return self.scale(self._zone.volume, [self._zone.min_volume, self._zone.max_volume], [0, 1])
 
     @property
     def is_volume_muted(self):
@@ -138,7 +146,7 @@ class YamahaYncaDevice(MediaPlayerDevice):
 
     def set_volume_level(self, volume):
         """Set volume level, convert range from 0..1."""
-        self._zone.volume = self.scale(volume, [0, 1], [-80.5, self._zone.max_volume])
+        self._zone.volume = self.scale(volume, [0, 1], [self._zone.min_volume, self._zone.max_volume])
 
     def mute_volume(self, mute):
         """Mute (true) or unmute (false) media player."""
