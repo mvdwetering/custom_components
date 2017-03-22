@@ -1,14 +1,15 @@
 """
 Support for binary sensor using RPi GPIO.
-This uses polling because using the events does not work properly for me.
-(events are missed or detected wrongly, which messes up the automations on my RPi1)
+This custom component uses polling because using the events does not work properly for me.
+Events are missed or detected wrongly, which messes up the automations on my RPi1.
+Probably the electrical side is a bit glitchy but there is no way around it in software it seems.
 
 With polling in my old script before I switched to HA I never had an issue
 
 Polling is fixed to 1 second
 
 For more details about this platform, please refer to the documentation at
-https://home-assistant.io/components/binary_sensor.rpi_gpio_poll/
+https://home-assistant.io/components/binary_sensor.rpi_gpio/
 """
 import logging
 

@@ -3,6 +3,24 @@ Support for building a Raspberry Pi cover in HA.
 
 For more details about this platform, please refer to the documentation at
 https://home-assistant.io/components/cover.rpi_gpio/
+
+Custom component because I need the cover to behave different from the current state.
+The current cover.rpi_gpio is designed for a specific garage door system and I need something
+different (on up/down generate a pulse on a specific pin).
+
+Actually the component should be redesigned so it could be much more flexible and cover all (well at least more)
+use cases. But since that is quite some work and would be a breaking change I just hacked something together
+that works for now.
+
+This cover is a projection screen for my projector. Reason for using the cover component is because it seems closest
+to what I need (up/down controls) and I get the UI for free.
+My control is made by wiring the RPi GPIO lines to the buttons of the projection screen remote (it has no trigger input)
+So basically I am just pressing the Up or Down button the remote, there is no feedback.
+
+Up > set pin high, wait a couple of 100ms and make it low again
+Down > set pin high, wait a couple of 100ms and make it low again
+Stop > Not wired in, but would be the same
+
 """
 import logging
 from time import sleep
