@@ -12,7 +12,7 @@ import logging
 import voluptuous as vol
 
 from homeassistant.components.media_player import (
-    SUPPORT_TURN_OFF, SUPPORT_TURN_ON, SUPPORT_VOLUME_MUTE, SUPPORT_VOLUME_SET,
+    SUPPORT_TURN_OFF, SUPPORT_TURN_ON, SUPPORT_VOLUME_MUTE, SUPPORT_VOLUME_SET, SUPPORT_VOLUME_STEP,
     SUPPORT_SELECT_SOURCE, SUPPORT_PLAY_MEDIA, SUPPORT_PAUSE, SUPPORT_STOP,
     SUPPORT_NEXT_TRACK, SUPPORT_PREVIOUS_TRACK, SUPPORT_PLAY,
     MEDIA_TYPE_MUSIC,
@@ -26,7 +26,7 @@ REQUIREMENTS = ['ynca==0.2.0']
 
 _LOGGER = logging.getLogger(__name__)
 
-SUPPORT_YAMAHA = SUPPORT_VOLUME_SET | SUPPORT_VOLUME_MUTE | \
+SUPPORT_YAMAHA_YNCA = SUPPORT_VOLUME_SET | SUPPORT_VOLUME_MUTE | SUPPORT_VOLUME_STEP | \
     SUPPORT_TURN_ON | SUPPORT_TURN_OFF | SUPPORT_SELECT_SOURCE
 
 CONF_SOURCE_NAMES = 'source_names'
@@ -67,7 +67,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
 
 class YamahaYncaDevice(MediaPlayerDevice):
-    """Representation of a Yamaha device."""
+    """Representation of a Yamaha Ynca device."""
 
     def __init__(self, name, receiver, zone, source_ignore, source_names):
         self._name = name
@@ -132,7 +132,7 @@ class YamahaYncaDevice(MediaPlayerDevice):
     @property
     def supported_features(self):
         """Flag of media commands that are supported."""
-        supported_commands = SUPPORT_YAMAHA
+        supported_commands = SUPPORT_YAMAHA_YNCA
         return supported_commands
 
     def turn_off(self):
@@ -142,6 +142,14 @@ class YamahaYncaDevice(MediaPlayerDevice):
     def set_volume_level(self, volume):
         """Set volume level, convert range from 0..1."""
         self._zone.volume = self.scale(volume, [0, 1], [self._zone.min_volume, self._zone.max_volume])
+
+    def volume_up(self):
+        """Volume up media player."""
+        self._zone.volume_up()
+
+    def volume_down(self):
+        """Volume down media player."""
+        self._zone.volume_down()
 
     def mute_volume(self, mute):
         """Mute (true) or unmute (false) media player."""
