@@ -21,7 +21,7 @@ from homeassistant.const import (CONF_NAME, CONF_PORT,  STATE_OFF, STATE_ON,
                                  STATE_PLAYING, STATE_IDLE)
 import homeassistant.helpers.config_validation as cv
 
-REQUIREMENTS = ['ynca==0.2.0']
+REQUIREMENTS = ['ynca==0.3.0']
 
 
 _LOGGER = logging.getLogger(__name__)
