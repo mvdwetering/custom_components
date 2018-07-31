@@ -27,7 +27,8 @@ from time import sleep
 
 import voluptuous as vol
 
-from homeassistant.components.cover import CoverDevice, PLATFORM_SCHEMA
+from homeassistant.components.cover import (
+    CoverDevice, PLATFORM_SCHEMA, SUPPORT_OPEN, SUPPORT_CLOSE)
 from homeassistant.const import CONF_NAME
 import homeassistant.components.rpi_gpio as rpi_gpio
 import homeassistant.helpers.config_validation as cv
@@ -120,3 +121,10 @@ class RPiGPIOPulseCover(CoverDevice):
     def open_cover(self):
         """Open the cover."""
         self._trigger(self._up_pin)
+
+    @property
+    def supported_features(self):
+        """Flag supported features."""
+        supported_features = SUPPORT_OPEN | SUPPORT_CLOSE 
+        return supported_features
+
