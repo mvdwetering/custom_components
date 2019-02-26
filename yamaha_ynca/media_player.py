@@ -12,11 +12,10 @@ import logging
 import voluptuous as vol
 
 from homeassistant.components.media_player import (
-    SUPPORT_TURN_OFF, SUPPORT_TURN_ON, SUPPORT_VOLUME_MUTE, SUPPORT_VOLUME_SET, SUPPORT_VOLUME_STEP,
-    SUPPORT_SELECT_SOURCE, SUPPORT_PLAY_MEDIA, SUPPORT_PAUSE, SUPPORT_STOP,
-    SUPPORT_NEXT_TRACK, SUPPORT_PREVIOUS_TRACK, SUPPORT_PLAY,
-    MEDIA_TYPE_MUSIC,
     MediaPlayerDevice, PLATFORM_SCHEMA)
+from homeassistant.components.media_player.const import (
+    SUPPORT_TURN_OFF, SUPPORT_TURN_ON, SUPPORT_VOLUME_MUTE,
+    SUPPORT_VOLUME_SET, SUPPORT_VOLUME_STEP, SUPPORT_SELECT_SOURCE)
 from homeassistant.const import (CONF_NAME, CONF_PORT,  STATE_OFF, STATE_ON,
                                  STATE_PLAYING, STATE_IDLE)
 import homeassistant.helpers.config_validation as cv
@@ -62,7 +61,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     for zone in receiver.zones:
         if zone not in zone_ignore:
             devices.append(YamahaYncaDevice(name, receiver, receiver.zones[zone], source_ignore, source_names))
-            
+
     add_devices(devices)
 
 
@@ -166,28 +165,3 @@ class YamahaYncaDevice(MediaPlayerDevice):
     def select_source(self, source):
         """Select input source."""
         self._zone.input = source
-
-    def media_play(self):
-        pass
-
-    def media_previous_track(self):
-        pass
-
-    def clear_playlist(self):
-        pass
-
-    def media_next_track(self):
-        pass
-
-    def play_media(self, media_type, media_id, **kwargs):
-        pass
-
-    def media_seek(self, position):
-        pass
-
-    def media_pause(self):
-        pass
-
-    def media_stop(self):
-        pass
-
